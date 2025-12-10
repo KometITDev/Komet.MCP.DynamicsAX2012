@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Komet.MCP.DynamicsAX2012.ServiceProxy</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="8.0.*" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="8.0.*" />
+  </ItemGroup>
+
+</Project>

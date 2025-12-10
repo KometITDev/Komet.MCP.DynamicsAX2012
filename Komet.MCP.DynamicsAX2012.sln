@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D8F9667E-5968-456A-87E1-6FCE4DAAE84F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komet.MCP.DynamicsAX2012.Core", "src\Komet.MCP.DynamicsAX2012.Core\Komet.MCP.DynamicsAX2012.Core.csproj", "{B4DFBD14-2B67-4659-8433-0D9EC9884C2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komet.MCP.DynamicsAX2012.ServiceProxy", "src\Komet.MCP.DynamicsAX2012.ServiceProxy\Komet.MCP.DynamicsAX2012.ServiceProxy.csproj", "{35C015F6-3C80-46E0-8771-D8A926E44CA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komet.MCP.DynamicsAX2012.Server", "src\Komet.MCP.DynamicsAX2012.Server\Komet.MCP.DynamicsAX2012.Server.csproj", "{9D3D8B15-79B4-4868-AE74-389E01325A92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0DCDECBD-6E7A-445E-9AA4-800305B5C3F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komet.MCP.DynamicsAX2012.Tests", "tests\Komet.MCP.DynamicsAX2012.Tests\Komet.MCP.DynamicsAX2012.Tests.csproj", "{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4DFBD14-2B67-4659-8433-0D9EC9884C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4DFBD14-2B67-4659-8433-0D9EC9884C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4DFBD14-2B67-4659-8433-0D9EC9884C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4DFBD14-2B67-4659-8433-0D9EC9884C2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35C015F6-3C80-46E0-8771-D8A926E44CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35C015F6-3C80-46E0-8771-D8A926E44CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35C015F6-3C80-46E0-8771-D8A926E44CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35C015F6-3C80-46E0-8771-D8A926E44CA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D3D8B15-79B4-4868-AE74-389E01325A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D3D8B15-79B4-4868-AE74-389E01325A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D3D8B15-79B4-4868-AE74-389E01325A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D3D8B15-79B4-4868-AE74-389E01325A92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B4DFBD14-2B67-4659-8433-0D9EC9884C2C} = {D8F9667E-5968-456A-87E1-6FCE4DAAE84F}
+		{35C015F6-3C80-46E0-8771-D8A926E44CA7} = {D8F9667E-5968-456A-87E1-6FCE4DAAE84F}
+		{9D3D8B15-79B4-4868-AE74-389E01325A92} = {D8F9667E-5968-456A-87E1-6FCE4DAAE84F}
+		{8134A7C0-F8FA-4AA0-B9AC-DA68C440BA08} = {0DCDECBD-6E7A-445E-9AA4-800305B5C3F1}
+	EndGlobalSection
+EndGlobal
