@@ -1,38 +1,49 @@
 # Komet.MCP.DynamicsAX2012
 
-A **Model Context Protocol (MCP) Server** for **Microsoft Dynamics AX 2012 R3** as part of the **Komet MCP Server Family**. This server exposes AIF Services via **NetTcp with Windows Authentication** and is implemented in **.NET 8**.
+A **Model Context Protocol (MCP) Server** for **Microsoft Dynamics AX 2012 R3** as part of the **Komet MCP Server Family**. This server supports **two backends**: AIF Services via NetTcp and Business Connector via HTTP Proxy.
 
 ## Features
 
-- **NetTcp Connection** with Kerberos/Windows Authentication
+- **Dual Backend Support**
+  - **AIF/WCF NetTcp** with Kerberos/Windows Authentication
+  - **Business Connector HTTP Proxy** for platform-independent access
+- **Configurable Backend Selection** via environment variable
 - **Customer Service** - Search and retrieve customer data
 - **Product Service** - Search and retrieve product data  
 - **Sales Order Service** - Search and retrieve sales order data
-- **Customer Quotation Service** - Search and retrieve quotation data
+- **Custom X++ Execution** (via BC Proxy)
 
 ## Prerequisites
 
-- .NET 8 SDK
-- Windows with Kerberos authentication configured
-- Network access to Dynamics AX 2012 R3 server (port 8201)
-- Valid Windows credentials with AX permissions
+- .NET 8 SDK (for MCP Server)
+- .NET Framework 4.8 (for BC Proxy, Windows only)
+- For AIF: Windows with Kerberos authentication configured
+- For BC Proxy: Business Connector installed on the machine
+- Network access to Dynamics AX 2012 R3 server
 
 ## Project Structure
 
 ```
 Komet.MCP.DynamicsAX2012/
 ├── src/
-│   ├── Komet.MCP.DynamicsAX2012.Server/          # MCP Server Host
+│   ├── Komet.MCP.DynamicsAX2012.Server/          # MCP Server Host (.NET 8)
 │   │   ├── Program.cs
 │   │   ├── Tools/
-│   │   │   ├── CustomerTools.cs
+│   │   │   ├── CustomerTools.cs                  # AIF-based tools
 │   │   │   ├── ProductTools.cs
-│   │   │   └── SalesOrderTools.cs
+│   │   │   ├── SalesOrderTools.cs
+│   │   │   ├── BCProxyTools.cs                   # BC Proxy-based tools
+│   │   │   └── UnifiedTools.cs                   # Status tool
 │   │   └── Services/
-│   │       └── AXConnectionService.cs            # UPN + NetTcp Logic
+│   │       ├── AXConnectionService.cs            # AIF/WCF NetTcp
+│   │       ├── BCProxyService.cs                 # BC Proxy HTTP Client
+│   │       └── AXBackendService.cs               # Backend selection
+│   ├── Komet.MCP.DynamicsAX2012.BCProxy/         # BC Proxy HTTP Server (.NET 4.8)
+│   │   ├── Program.cs
+│   │   ├── Controllers/
+│   │   └── Services/
 │   ├── Komet.MCP.DynamicsAX2012.ServiceProxy/    # Generated WCF Proxies
-│   │   └── ServiceReference/
-│   │       └── ServiceReference.cs
+│   │   └── ServiceReference.cs
 │   └── Komet.MCP.DynamicsAX2012.Core/            # Shared Models
 │       ├── Models/
 │       └── Interfaces/
@@ -53,73 +64,98 @@ cd Komet.MCP.DynamicsAX2012
 dotnet build
 ```
 
-### 2. Configure Environment Variables (Optional)
+### 2. Configure Environment Variables
 
 ```bash
-# Override default configuration
+# Backend selection (AIF, BC, or AUTO)
+set AX_BACKEND=BC
+
+# AIF Configuration (for AX_BACKEND=AIF or AUTO)
 set AX_ENDPOINT_URL=net.tcp://your-ax-server:8201/DynamicsAx/Services/MCPServices
 set AX_UPN=YourServiceAccount@yourdomain.com
-set AX_DEFAULT_COMPANY=GBL
 set AX_TIMEOUT_SECONDS=30
+
+# BC Proxy Configuration (for AX_BACKEND=BC or AUTO)
+set BC_PROXY_URL=http://localhost:5100
+set BC_PROXY_TIMEOUT=30
+
+# Common
+set AX_DEFAULT_COMPANY=GBL
 ```
 
-### 3. Run the MCP Server
+### 3. Start BC Proxy (if using BC backend)
+
+```bash
+# The BC Proxy must run on a machine with Business Connector installed
+.\src\Komet.MCP.DynamicsAX2012.BCProxy\bin\Debug\net48\Komet.MCP.DynamicsAX2012.BCProxy.exe
+```
+
+### 4. Run the MCP Server
 
 ```bash
 dotnet run --project src/Komet.MCP.DynamicsAX2012.Server
 ```
 
+## Backend Selection
+
+| Mode | Environment Variable | Description |
+|------|---------------------|-------------|
+| **AIF** | `AX_BACKEND=AIF` | Use AIF/WCF NetTcp with Kerberos (default) |
+| **BC** | `AX_BACKEND=BC` | Use Business Connector HTTP Proxy |
+| **AUTO** | `AX_BACKEND=AUTO` | Try AIF first, fallback to BC on error |
+
 ## MCP Tools
 
-### ax_customer_search
+### Status Tool
 
-Search for customers in Dynamics AX 2012.
+| Tool | Description |
+|------|-------------|
+| `ax_status` | Get current backend configuration and status |
 
-**Parameters:**
-- `accountNum` (string, optional) - Customer account number
-- `name` (string, optional) - Customer name (partial match)
+### AIF Tools (AX_BACKEND=AIF)
+
+| Tool | Description |
+|------|-------------|
+| `ax_customer_search` | Search customers by accountNum or customerGroup |
+| `ax_customer_get` | Get detailed customer information |
+| `ax_product_search` | Search products by itemId |
+| `ax_product_get` | Get detailed product information |
+| `ax_salesorder_search` | Search sales orders by salesId or customerAccount |
+| `ax_salesorder_get` | Get sales order with all details |
+
+### BC Proxy Tools (AX_BACKEND=BC)
+
+| Tool | Description |
+|------|-------------|
+| `ax_bc_health` | Check BC Proxy health status |
+| `ax_bc_customer_get` | Get customer via BC Proxy |
+| `ax_bc_customer_search` | Search customers via BC Proxy |
+| `ax_bc_salesorder_get` | Get sales order via BC Proxy |
+| `ax_bc_salesorder_search` | Search sales orders via BC Proxy |
+| `ax_bc_execute` | Execute custom X++ method |
+
+### Tool Parameters
+
+**Customer Tools:**
+- `accountNum` (string) - Customer account number
+- `name` (string) - Customer name (partial match, BC only)
+- `customerGroup` (string) - Customer group code (AIF only)
 - `company` (string, default: "GBL") - AX company code
 
-### ax_customer_get
-
-Get detailed customer information.
-
-**Parameters:**
-- `accountNum` (string, required) - Customer account number
+**Product Tools:**
+- `itemId` (string) - Product/Item ID
+- `name` (string) - Product name (partial match)
 - `company` (string, default: "GBL") - AX company code
 
-### ax_product_search
-
-Search for products in Dynamics AX 2012.
-
-**Parameters:**
-- `itemId` (string, optional) - Product/Item ID
-- `name` (string, optional) - Product name (partial match)
+**Sales Order Tools:**
+- `salesId` (string) - Sales order ID
+- `customerAccount` (string) - Customer account number
 - `company` (string, default: "GBL") - AX company code
 
-### ax_product_get
-
-Get detailed product information.
-
-**Parameters:**
-- `itemId` (string, required) - Product/Item ID
-- `company` (string, default: "GBL") - AX company code
-
-### ax_salesorder_search
-
-Search for sales orders in Dynamics AX 2012.
-
-**Parameters:**
-- `salesId` (string, optional) - Sales order ID
-- `customerAccount` (string, optional) - Customer account number
-- `company` (string, default: "GBL") - AX company code
-
-### ax_salesorder_get
-
-Get sales order with all details.
-
-**Parameters:**
-- `salesId` (string, required) - Sales order ID
+**X++ Execute Tool (BC only):**
+- `className` (string) - X++ class name
+- `methodName` (string) - Static method name
+- `parametersJson` (string) - JSON array of parameters
 - `company` (string, default: "GBL") - AX company code
 
 ## Technical Details
@@ -182,6 +218,8 @@ dotnet-svcutil ../../wsdl/MCPServices.wsdl -n "*,Komet.MCP.DynamicsAX2012.Servic
 
 Add to your Claude Desktop configuration (`claude_desktop_config.json`):
 
+### Using AIF Backend (Kerberos)
+
 ```json
 {
   "mcpServers": {
@@ -189,12 +227,33 @@ Add to your Claude Desktop configuration (`claude_desktop_config.json`):
       "command": "dotnet",
       "args": ["run", "--project", "C:/path/to/Komet.MCP.DynamicsAX2012/src/Komet.MCP.DynamicsAX2012.Server"],
       "env": {
+        "AX_BACKEND": "AIF",
         "AX_DEFAULT_COMPANY": "GBL"
       }
     }
   }
 }
 ```
+
+### Using BC Proxy Backend
+
+```json
+{
+  "mcpServers": {
+    "dynamics-ax": {
+      "command": "dotnet",
+      "args": ["run", "--project", "C:/path/to/Komet.MCP.DynamicsAX2012/src/Komet.MCP.DynamicsAX2012.Server"],
+      "env": {
+        "AX_BACKEND": "BC",
+        "BC_PROXY_URL": "http://localhost:5100",
+        "AX_DEFAULT_COMPANY": "GBL"
+      }
+    }
+  }
+}
+```
+
+> **Note:** When using BC backend, ensure the BC Proxy is running before starting Claude Desktop.
 
 ## Troubleshooting
 
@@ -232,4 +291,10 @@ Proprietary - Komet GmbH
 
 ## Version History
 
+- **1.1.0** (2025-12-12) - Dual backend support
+  - Added Business Connector HTTP Proxy (`BCProxy`)
+  - Added configurable backend selection (`AX_BACKEND` environment variable)
+  - Added BC Proxy tools (`ax_bc_*`)
+  - Added `ax_status` tool for backend status
+  - Added `ax_bc_execute` for custom X++ execution
 - **1.0.0** (2025-12-10) - Initial release with Customer, Product, and SalesOrder tools

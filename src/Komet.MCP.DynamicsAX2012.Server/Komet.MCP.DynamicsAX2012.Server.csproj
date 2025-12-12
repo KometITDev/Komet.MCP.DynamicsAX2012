@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Komet.MCP.DynamicsAX2012.Server</RootNamespace>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>Komet GmbH</Authors>
+    <Company>Komet GmbH</Company>
+    <Product>Komet.MCP.DynamicsAX2012</Product>
+    <Description>MCP Server for Dynamics AX 2012 R3 with AIF and Business Connector support</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,13 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Komet.MCP.DynamicsAX2012.Core</RootNamespace>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>Komet GmbH</Authors>
+    <Company>Komet GmbH</Company>
+    <Product>Komet.MCP.DynamicsAX2012.Core</Product>
+    <Description>Shared models and interfaces for Komet.MCP.DynamicsAX2012</Description>
   </PropertyGroup>
 
   <!-- .NET Standard 2.0 needs explicit System.* references -->

@@ -7,6 +7,13 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>Komet.MCP.DynamicsAX2012.BCProxy</RootNamespace>
     <AssemblyName>Komet.MCP.DynamicsAX2012.BCProxy</AssemblyName>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>Komet GmbH</Authors>
+    <Company>Komet GmbH</Company>
+    <Product>Komet.MCP.DynamicsAX2012.BCProxy</Product>
+    <Description>Business Connector HTTP Proxy for Dynamics AX 2012 R3</Description>
   </PropertyGroup>
 
   <!-- Reference to shared models -->
@@ -23,11 +30,11 @@
   <!-- AX Business Connector references -->
   <ItemGroup>
     <Reference Include="Microsoft.Dynamics.BusinessConnectorNet">
-      <HintPath>C:\BusinessConnector\Bin\Microsoft.Dynamics.BusinessConnectorNet.dll</HintPath>
+      <HintPath>C:\Program Files\Microsoft Dynamics AX\60\BusinessConnector\Bin\Microsoft.Dynamics.BusinessConnectorNet.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="Microsoft.Dynamics.AX.ManagedInterop">
-      <HintPath>C:\BusinessConnector\Bin\Microsoft.Dynamics.AX.ManagedInterop.dll</HintPath>
+      <HintPath>C:\Program Files\Microsoft Dynamics AX\60\BusinessConnector\Bin\Microsoft.Dynamics.AX.ManagedInterop.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
