@@ -59,7 +59,7 @@ Komet.MCP.DynamicsAX2012/
 ### 1. Clone and Build
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/KometITDev/Komet.MCP.DynamicsAX2012.git
 cd Komet.MCP.DynamicsAX2012
 dotnet build
 ```
