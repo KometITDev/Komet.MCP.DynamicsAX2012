@@ -162,35 +162,77 @@ public class SalesOrderTools
         {
             var order = new SalesOrderInfo
             {
+                // Order identification
                 SalesId = salesTable.SalesId ?? string.Empty,
                 CustomerAccount = salesTable.CustAccount ?? string.Empty,
-                Currency = salesTable.CurrencyCode ?? string.Empty,
-                Status = salesTable.SalesStatus?.ToString() ?? string.Empty,
+                CustomerName = CleanString(salesTable.DeliveryName),
                 Company = company,
+
+                // Status and dates
+                Status = salesTable.SalesStatus?.ToString() ?? string.Empty,
+                DeliveryDate = salesTable.DeliveryDate,
+                RequestedShipDate = salesTable.ShippingDateRequested,
+                ConfirmedShipDate = salesTable.ShippingDateConfirmed,
+
+                // Financial
+                Currency = salesTable.CurrencyCode ?? string.Empty,
+
+                // Delivery
+                DeliveryName = CleanString(salesTable.DeliveryName),
+                DeliveryMode = salesTable.DlvMode ?? string.Empty,
+                DeliveryTerms = salesTable.DlvTerm ?? string.Empty,
+
+                // Reference
+                CustomerReference = salesTable.CustomerRef ?? string.Empty,
+                CustomerGroup = salesTable.CustGroup ?? string.Empty,
+
                 Lines = new List<SalesOrderLineInfo>()
             };
 
-            // Map sales lines if available
+            // Map sales lines and calculate total
+            decimal totalAmount = 0m;
             if (salesTable.SalesLine != null)
             {
                 foreach (var line in salesTable.SalesLine)
                 {
+                    var lineAmount = line.LineAmount ?? 0m;
+                    totalAmount += lineAmount;
+
                     order.Lines.Add(new SalesOrderLineInfo
                     {
                         ItemId = line.ItemId ?? string.Empty,
                         ItemName = line.Name ?? string.Empty,
                         Quantity = line.SalesQty,
                         UnitPrice = line.SalesPrice ?? 0m,
-                        LineAmount = line.LineAmount ?? 0m,
+                        LineAmount = lineAmount,
                         Unit = line.SalesUnit ?? string.Empty
                     });
                 }
             }
+            order.TotalAmount = totalAmount;
 
             result.Add(order);
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Cleans string values from AX - removes leading/trailing whitespace but preserves internal line breaks
+    /// </summary>
+    private static string CleanString(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+        
+        // Normalize line breaks to \n and trim each line, then trim overall
+        var lines = value
+            .Replace("\r\n", "\n")
+            .Replace("\r", "\n")
+            .Split('\n')
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrEmpty(line));
+        
+        return string.Join("\n", lines);
     }
 
     private static string FormatAifFault(AifFault? fault)

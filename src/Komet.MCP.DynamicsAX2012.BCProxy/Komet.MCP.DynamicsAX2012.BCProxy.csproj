@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Komet.MCP.DynamicsAX2012.BCProxy</RootNamespace>
+    <AssemblyName>Komet.MCP.DynamicsAX2012.BCProxy</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Reference to shared models -->
+  <ItemGroup>
+    <ProjectReference Include="..\Komet.MCP.DynamicsAX2012.Core\Komet.MCP.DynamicsAX2012.Core.csproj" />
+  </ItemGroup>
+
+  <!-- NuGet packages for self-hosted HTTP API -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- AX Business Connector references -->
+  <ItemGroup>
+    <Reference Include="Microsoft.Dynamics.BusinessConnectorNet">
+      <HintPath>C:\BusinessConnector\Bin\Microsoft.Dynamics.BusinessConnectorNet.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.ManagedInterop">
+      <HintPath>C:\BusinessConnector\Bin\Microsoft.Dynamics.AX.ManagedInterop.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

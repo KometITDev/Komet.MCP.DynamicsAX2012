@@ -38,7 +38,7 @@ public class CustomerIntegrationTests
         _customerTools = new CustomerTools(axConnection, toolLogger);
     }
 
-    [Fact(Skip = "Requires network access to AX 2012 server")]
+    [Fact(Skip = "Integration test - requires AX network access")]
     public async Task GetCustomer_234760_ReturnsCustomerData()
     {
         // Act
@@ -51,7 +51,7 @@ public class CustomerIntegrationTests
         Assert.Contains("234760", result);
     }
 
-    [Fact(Skip = "Requires network access to AX 2012 server")]
+    [Fact(Skip = "Integration test - requires AX network access")]
     public async Task SearchCustomers_ByAccountNum_ReturnsResults()
     {
         // Act

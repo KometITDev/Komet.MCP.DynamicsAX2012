@@ -1,3 +1,5 @@
+using System;
+
 namespace Komet.MCP.DynamicsAX2012.Core.Models;
 
 /// <summary>
