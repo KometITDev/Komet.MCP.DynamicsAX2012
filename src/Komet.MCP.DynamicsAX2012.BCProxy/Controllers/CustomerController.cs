@@ -21,7 +21,15 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Controllers
             }
             catch (Exception ex)
             {
-                return InternalServerError(new Exception($"Error getting customer {accountNum}: {ex.Message}"));
+                // Include inner exception for better debugging
+                var message = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += " | Inner: " + ex.InnerException.Message;
+                }
+                Console.WriteLine($"Error: {message}");
+                Console.WriteLine($"Stack: {ex.StackTrace}");
+                return InternalServerError(new Exception($"Error getting customer {accountNum}: {message}"));
             }
         }
 
