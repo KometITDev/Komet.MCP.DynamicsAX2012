@@ -108,6 +108,36 @@ public class BCProxyTools
     }
 
     /// <summary>
+    /// Search customers by postal address via BC Proxy
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_customer_search_address")]
+    [Description("Search for customers by postal address (ZIP code and/or city) in Dynamics AX 2012 via Business Connector Proxy. Supports wildcards with *.")]
+    public async Task<string> SearchCustomersByAddressAsync(
+        [Description("ZIP/Postal code (supports * wildcard, e.g. '32*' for all starting with 32)")] string? zipCode = null,
+        [Description("City name (supports * wildcard, e.g. 'Ber*' for Berlin, Bergisch Gladbach, etc.)")] string? city = null,
+        [Description("AX company code")] string company = "GBL")
+    {
+        _logger.LogInformation("Searching customers by address via BC Proxy: ZipCode={ZipCode}, City={City}, Company={Company}",
+            zipCode, city, company);
+
+        if (string.IsNullOrEmpty(zipCode) && string.IsNullOrEmpty(city))
+        {
+            return JsonSerializer.Serialize(new { error = "Please provide at least one search criteria: zipCode or city" });
+        }
+
+        try
+        {
+            var customers = await _bcProxy.SearchCustomersByAddressAsync(zipCode, city, company);
+            return JsonSerializer.Serialize(customers, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching customers by address via BC Proxy");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Get sales order via BC Proxy
     /// </summary>
     [McpServerTool(Name = "ax_bc_salesorder_get")]

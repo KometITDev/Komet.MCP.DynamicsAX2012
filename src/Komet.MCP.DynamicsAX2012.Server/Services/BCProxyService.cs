@@ -126,6 +126,38 @@ public class BCProxyService
     }
 
     /// <summary>
+    /// Search customers by postal address (ZipCode and/or City)
+    /// </summary>
+    public async Task<IEnumerable<CustomerInfo>> SearchCustomersByAddressAsync(string? zipCode = null, string? city = null, string company = "GBL")
+    {
+        _logger.LogInformation("Searching customers by address via BC Proxy: ZipCode={ZipCode}, City={City}, Company={Company}",
+            zipCode, city, company);
+
+        try
+        {
+            var queryParams = new List<string> { $"company={company}" };
+            if (!string.IsNullOrEmpty(zipCode)) queryParams.Add($"zipCode={Uri.EscapeDataString(zipCode)}");
+            if (!string.IsNullOrEmpty(city)) queryParams.Add($"city={Uri.EscapeDataString(city)}");
+
+            var response = await _httpClient.GetAsync($"/api/customer/search/address?{string.Join("&", queryParams)}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("BC Proxy returned {StatusCode}: {Error}", response.StatusCode, error);
+                return Enumerable.Empty<CustomerInfo>();
+            }
+
+            return await response.Content.ReadFromJsonAsync<IEnumerable<CustomerInfo>>() ?? Enumerable.Empty<CustomerInfo>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching customers by address from BC Proxy");
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Get sales order by ID
     /// </summary>
     public async Task<SalesOrderInfo?> GetSalesOrderAsync(string salesId, string company = "GBL")

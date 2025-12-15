@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using Komet.MCP.DynamicsAX2012.Core.Models;
 using Microsoft.Dynamics.BusinessConnectorNet;
 
@@ -16,6 +17,10 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Services
         
         // AX Server configuration - can be overridden via environment variables or config
         private static readonly string AosServer = Environment.GetEnvironmentVariable("AX_AOS_SERVER") ?? "IT-TEST-ERP3CU";
+        
+        // SQL Server connection string for direct database queries
+        private static readonly string SqlConnectionString = Environment.GetEnvironmentVariable("AX_SQL_CONNECTION") 
+            ?? "Server=IT-TEST-ERP3CU;Database=MicrosoftDynamicsGBLAX;Integrated Security=True;";
 
         public BusinessConnectorService()
         {
@@ -140,6 +145,98 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Services
             catch (Exception ex)
             {
                 throw new Exception($"Error searching customers: {ex.Message}", ex);
+            }
+
+            return customers;
+        }
+
+        /// <summary>
+        /// Search customers by postal address (ZipCode and/or City)
+        /// Uses direct SQL query for efficient join across tables
+        /// </summary>
+        public List<CustomerInfo> SearchCustomersByAddress(string zipCode, string city, string company)
+        {
+            EnsureLoggedIn(company);
+            var customers = new List<CustomerInfo>();
+
+            try
+            {
+                // Build SQL WHERE clause
+                var conditions = new List<string>();
+                if (!string.IsNullOrEmpty(zipCode))
+                {
+                    var pattern = zipCode.Replace("*", "%");
+                    conditions.Add(zipCode.Contains("*") 
+                        ? $"pa.ZIPCODE LIKE @zipCode" 
+                        : $"pa.ZIPCODE = @zipCode");
+                }
+                if (!string.IsNullOrEmpty(city))
+                {
+                    var pattern = city.Replace("*", "%");
+                    conditions.Add(city.Contains("*") 
+                        ? $"pa.CITY LIKE @city" 
+                        : $"pa.CITY = @city");
+                }
+
+                var whereClause = conditions.Count > 0 
+                    ? "WHERE " + string.Join(" AND ", conditions) 
+                    : "";
+
+                // SQL query joining CustTable -> DirPartyTable -> DirPartyLocation -> LogisticsPostalAddress
+                var sql = $@"
+                    SELECT DISTINCT 
+                        c.ACCOUNTNUM, dp.NAME, c.CUSTGROUP, c.CURRENCY, c.PARTY,
+                        pa.ZIPCODE, pa.CITY, pa.STREET, pa.COUNTRYREGIONID
+                    FROM CUSTTABLE c
+                    INNER JOIN DIRPARTYTABLE dp ON dp.RECID = c.PARTY
+                    INNER JOIN DIRPARTYLOCATION dpl ON dpl.PARTY = c.PARTY
+                    INNER JOIN LOGISTICSPOSTALADDRESS pa ON pa.LOCATION = dpl.LOCATION
+                    {whereClause}
+                    AND c.DATAAREAID = @company";
+
+                using (var connection = new SqlConnection(SqlConnectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@company", company.ToLower());
+                        if (!string.IsNullOrEmpty(zipCode))
+                            command.Parameters.AddWithValue("@zipCode", zipCode.Replace("*", "%"));
+                        if (!string.IsNullOrEmpty(city))
+                            command.Parameters.AddWithValue("@city", city.Replace("*", "%"));
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var partyId = reader.GetInt64(reader.GetOrdinal("PARTY"));
+                                var customer = new CustomerInfo
+                                {
+                                    AccountNum = reader.GetString(reader.GetOrdinal("ACCOUNTNUM")),
+                                    Name = reader.IsDBNull(reader.GetOrdinal("NAME")) ? "" : reader.GetString(reader.GetOrdinal("NAME")),
+                                    CustomerGroup = reader.IsDBNull(reader.GetOrdinal("CUSTGROUP")) ? "" : reader.GetString(reader.GetOrdinal("CUSTGROUP")),
+                                    Currency = reader.IsDBNull(reader.GetOrdinal("CURRENCY")) ? "" : reader.GetString(reader.GetOrdinal("CURRENCY")),
+                                    Company = company,
+                                    Party = partyId.ToString(),
+                                    PrimaryAddress = new CustomerAddress
+                                    {
+                                        ZipCode = reader.IsDBNull(reader.GetOrdinal("ZIPCODE")) ? "" : reader.GetString(reader.GetOrdinal("ZIPCODE")),
+                                        City = reader.IsDBNull(reader.GetOrdinal("CITY")) ? "" : reader.GetString(reader.GetOrdinal("CITY")),
+                                        Street = reader.IsDBNull(reader.GetOrdinal("STREET")) ? "" : reader.GetString(reader.GetOrdinal("STREET")),
+                                        CountryRegionId = reader.IsDBNull(reader.GetOrdinal("COUNTRYREGIONID")) ? "" : reader.GetString(reader.GetOrdinal("COUNTRYREGIONID")),
+                                        IsPrimary = true
+                                    }
+                                };
+
+                                customers.Add(customer);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error searching customers by address: {ex.Message}", ex);
             }
 
             return customers;
