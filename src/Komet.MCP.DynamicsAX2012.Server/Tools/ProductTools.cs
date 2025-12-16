@@ -168,11 +168,10 @@ public class ProductTools
         {
             result.Add(new ProductInfo
             {
-                ProductNumber = product.DisplayProductNumber ?? string.Empty,
                 ItemId = product.DisplayProductNumber ?? string.Empty,
-                Name = product.SearchName ?? string.Empty,
+                ItemName = product.SearchName ?? string.Empty,
                 Description = product.SearchName ?? string.Empty,
-                ProductType = product.GetType().Name,
+                ItemType = product.GetType().Name,
                 Company = company
             });
         }
