@@ -47,6 +47,29 @@ Erwartung: IIS Standard-Willkommensseite
 - ✓ Setzt Berechtigungen
 - ✓ Führt Health Check durch
 
+**WICHTIG - App Pool Authentifizierung:**
+
+Der BC Proxy benötigt einen Account mit AX-Berechtigungen. Nach dem Deployment:
+
+```powershell
+# Option 1: Domain-User (empfohlen)
+$appcmd = "$env:SystemRoot\System32\inetsrv\appcmd.exe"
+& $appcmd set apppool "BCProxyAppPool" /processModel.identityType:SpecificUser
+& $appcmd set apppool "BCProxyAppPool" /processModel.userName:"DOMAIN\Username"
+& $appcmd set apppool "BCProxyAppPool" /processModel.password:"YourPassword"
+
+# Option 2: ApplicationPoolIdentity (modern)
+& $appcmd set apppool "BCProxyAppPool" /processModel.identityType:ApplicationPoolIdentity
+# Dann "IIS APPPOOL\BCProxyAppPool" in AX als Benutzer anlegen
+
+# App Pool neu starten
+& $appcmd stop apppool "BCProxyAppPool"
+& $appcmd start apppool "BCProxyAppPool"
+```
+
+**Oder über IIS Manager:**
+- Application Pools → BCProxyAppPool → Advanced Settings → Identity → Custom account
+
 ## 4. BC Proxy testen
 
 ```powershell

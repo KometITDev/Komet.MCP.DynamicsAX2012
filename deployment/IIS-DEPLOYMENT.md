@@ -59,6 +59,88 @@ cd d:\source\repos\Komet.MCP.DynamicsAX2012\deployment
 | `AXAosServer` | AX AOS Server Name | IT-TEST-ERP3CU |
 | `AXSqlConnection` | AX SQL Connection String | [siehe Skript] |
 
+## App Pool Authentifizierung für AX Zugriff
+
+**WICHTIG:** Der BC Proxy benötigt einen Account mit Dynamics AX Berechtigungen, um sich beim Business Connector anzumelden.
+
+### Option 1: Domain-User (Empfohlen für Produktion)
+
+Verwende einen Domain-User mit AX-Berechtigungen:
+
+```powershell
+$appcmd = "$env:SystemRoot\System32\inetsrv\appcmd.exe"
+
+# Domain-User konfigurieren
+& $appcmd set apppool "BCProxyAppPool" /processModel.identityType:SpecificUser
+& $appcmd set apppool "BCProxyAppPool" /processModel.userName:"DOMAIN\Username"
+& $appcmd set apppool "BCProxyAppPool" /processModel.password:"YourPassword"
+
+# App Pool neu starten
+& $appcmd stop apppool "BCProxyAppPool"
+& $appcmd start apppool "BCProxyAppPool"
+```
+
+**Oder über IIS Manager:**
+1. IIS Manager → Application Pools → BCProxyAppPool
+2. Rechtsklick → Advanced Settings
+3. Process Model → Identity → Custom account
+4. Set Credentials eingeben
+5. OK → App Pool neu starten
+
+**Vorteile:**
+- Explizite Kontrolle über Berechtigungen
+- Einfaches Troubleshooting
+- Standard für Produktionsumgebungen
+
+### Option 2: ApplicationPoolIdentity (Modern)
+
+```powershell
+& $appcmd set apppool "BCProxyAppPool" /processModel.identityType:ApplicationPoolIdentity
+```
+
+**Wichtig:** Account `IIS APPPOOL\BCProxyAppPool` muss in AX als Benutzer angelegt werden.
+
+**In Dynamics AX:**
+1. System Administration → Common → Users
+2. Create users from Windows logins
+3. Account hinzufügen: `IIS APPPOOL\BCProxyAppPool`
+4. User-Rolle zuweisen mit Business Connector Berechtigung
+
+**Vorteile:**
+- Bessere Sicherheit (isolierter Account pro App Pool)
+- Keine Passwort-Verwaltung nötig
+
+### Option 3: NetworkService (Standard, nicht empfohlen)
+
+```powershell
+& $appcmd set apppool "BCProxyAppPool" /processModel.identityType:NetworkService
+```
+
+**Wichtig:** Account `NT AUTHORITY\NETWORK SERVICE` muss in AX berechtigt werden.
+
+**In Dynamics AX:**
+1. System Administration → Common → Users
+2. Create users from Windows logins
+3. Account hinzufügen: `NT AUTHORITY\NETWORK SERVICE`
+4. User-Rolle zuweisen
+
+**Nachteile:**
+- Geteilter Account (mehrere Dienste nutzen NetworkService)
+- Schwieriger zu auditen
+
+### AX-Berechtigungen prüfen
+
+```powershell
+# Test nach App Pool Änderung
+Invoke-WebRequest "http://localhost:5100/api/health"
+Invoke-WebRequest "http://localhost:5100/api/product/ITEM001?company=GBL"
+```
+
+**Bei Fehler "Unable to log on to Microsoft Dynamics AX":**
+- App Pool Identity prüfen
+- AX-Benutzer und Berechtigungen prüfen
+- Business Connector Konfiguration prüfen
+
 ## Manuelles Deployment
 
 Falls das PowerShell Skript nicht verwendet werden kann:
