@@ -10,8 +10,13 @@ using ModelContextProtocol.Server;
 namespace Komet.MCP.DynamicsAX2012.Server.Tools;
 
 /// <summary>
-/// MCP Tools for Customer operations in Dynamics AX 2012
+/// MCP Tools for Customer operations in Dynamics AX 2012 via AIF
 /// </summary>
+/// <remarks>
+/// DEPRECATED: Use BCProxyTools instead for full customer information.
+/// BC Proxy provides better address and contact data including custom fields.
+/// </remarks>
+[Obsolete("Use BCProxyTools (ax_bc_customer_*) instead for better data quality and custom fields.")]
 [McpServerToolType]
 public class CustomerTools
 {

@@ -10,8 +10,14 @@ using ModelContextProtocol.Server;
 namespace Komet.MCP.DynamicsAX2012.Server.Tools;
 
 /// <summary>
-/// MCP Tools for Product operations in Dynamics AX 2012
+/// MCP Tools for Product operations in Dynamics AX 2012 via AIF
 /// </summary>
+/// <remarks>
+/// DEPRECATED: Use BCProxyTools instead for full product information including custom Bras fields.
+/// AIF tools only provide limited product data (6 basic fields).
+/// BC Proxy provides: multi-language support, 11 custom Bras fields, categories, units, etc.
+/// </remarks>
+[Obsolete("Use BCProxyTools (ax_bc_product_get) instead. AIF provides limited product data.")]
 [McpServerToolType]
 public class ProductTools
 {

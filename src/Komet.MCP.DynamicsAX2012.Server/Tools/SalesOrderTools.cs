@@ -10,8 +10,13 @@ using ModelContextProtocol.Server;
 namespace Komet.MCP.DynamicsAX2012.Server.Tools;
 
 /// <summary>
-/// MCP Tools for Sales Order operations in Dynamics AX 2012
+/// MCP Tools for Sales Order operations in Dynamics AX 2012 via AIF
 /// </summary>
+/// <remarks>
+/// DEPRECATED: Use BCProxyTools instead for sales order operations.
+/// BC Proxy provides direct table access with better performance.
+/// </remarks>
+[Obsolete("Use BCProxyTools (ax_bc_salesorder_*) instead for better performance and data access.")]
 [McpServerToolType]
 public class SalesOrderTools
 {
