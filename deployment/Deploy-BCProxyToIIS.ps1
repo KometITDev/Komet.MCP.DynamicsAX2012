@@ -178,25 +178,46 @@ $webConfigContent = @"
 Set-Content -Path (Join-Path $PhysicalPath "web.config") -Value $webConfigContent -Force
 Write-Success "web.config erstellt"
 
-# 6. Application Pool erstellen
-Write-Info "Erstelle Application Pool: $AppPoolName"
+# 6. Application Pool erstellen/aktualisieren
+Write-Info "Konfiguriere Application Pool: $AppPoolName"
 try {
-    if (Test-Path "IIS:\AppPools\$AppPoolName") {
-        Write-Warning "App Pool existiert bereits, wird aktualisiert"
-        Remove-WebAppPool -Name $AppPoolName
+    # Prüfen ob App Pool existiert (nur Get-WebAppPoolState nutzen)
+    $poolExists = $false
+    try {
+        $state = Get-WebAppPoolState -Name $AppPoolName -ErrorAction Stop
+        $poolExists = $true
+        Write-Info "App Pool existiert bereits (Status: $($state.Value))"
+        
+        # Stoppen falls läuft
+        if ($state.Value -eq 'Started') {
+            Stop-WebAppPool -Name $AppPoolName
+            Start-Sleep -Seconds 2
+        }
+    }
+    catch {
+        Write-Info "Erstelle neuen App Pool"
+        $poolExists = $false
     }
     
-    New-WebAppPool -Name $AppPoolName
-    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -Name "managedRuntimeVersion" -Value "v4.0"
-    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -Name "enable32BitAppOnWin64" -Value $false
-    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -Name "processModel.identityType" -Value "NetworkService"
-    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -Name "processModel.loadUserProfile" -Value $true
-    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -Name "startMode" -Value "AlwaysRunning"
+    if (-not $poolExists) {
+        New-WebAppPool -Name $AppPoolName | Out-Null
+        Start-Sleep -Seconds 1
+    }
     
-    Write-Success "App Pool erstellt"
+    # Einstellungen mit appcmd.exe konfigurieren (robuster als IIS PSDrive)
+    $appcmd = "$env:SystemRoot\System32\inetsrv\appcmd.exe"
+    
+    & $appcmd set apppool $AppPoolName /managedRuntimeVersion:v4.0 | Out-Null
+    & $appcmd set apppool $AppPoolName /enable32BitAppOnWin64:false | Out-Null
+    & $appcmd set apppool $AppPoolName /processModel.identityType:NetworkService | Out-Null
+    & $appcmd set apppool $AppPoolName /processModel.loadUserProfile:true | Out-Null
+    & $appcmd set apppool $AppPoolName /startMode:AlwaysRunning | Out-Null
+    
+    Write-Success "App Pool konfiguriert"
 }
 catch {
-    Write-ErrorMsg "Fehler beim Erstellen des App Pools: $_"
+    Write-ErrorMsg "Fehler beim Konfigurieren des App Pools: $_"
+    Write-ErrorMsg "Details: $($_.Exception.Message)"
     exit 1
 }
 

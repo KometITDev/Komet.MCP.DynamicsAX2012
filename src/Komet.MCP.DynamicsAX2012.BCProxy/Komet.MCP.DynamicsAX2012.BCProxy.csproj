@@ -15,6 +15,7 @@
     <Company>Komet GmbH</Company>
     <Product>Komet.MCP.DynamicsAX2012.BCProxy</Product>
     <Description>Business Connector HTTP Proxy for Dynamics AX 2012 R3</Description>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <!-- Reference to shared models -->
@@ -22,9 +23,10 @@
     <ProjectReference Include="..\Komet.MCP.DynamicsAX2012.Core\Komet.MCP.DynamicsAX2012.Core.csproj" />
   </ItemGroup>
 
-  <!-- NuGet packages for self-hosted HTTP API -->
+  <!-- NuGet packages for HTTP API -->
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="4.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
