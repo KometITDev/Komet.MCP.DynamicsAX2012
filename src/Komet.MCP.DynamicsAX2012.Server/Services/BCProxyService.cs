@@ -217,6 +217,40 @@ public class BCProxyService
     }
 
     /// <summary>
+    /// Get product by item ID
+    /// </summary>
+    public async Task<ProductInfo?> GetProductAsync(string itemId, string company = "GBL", string language = "de", bool includeCategories = false)
+    {
+        _logger.LogInformation("Getting product {ItemId} from BC Proxy, Company={Company}, Language={Language}", itemId, company, language);
+
+        try
+        {
+            var queryParams = new List<string> 
+            { 
+                $"company={company}",
+                $"language={language}",
+                $"includeCategories={includeCategories.ToString().ToLower()}"
+            };
+
+            var response = await _httpClient.GetAsync($"/api/product/{itemId}?{string.Join("&", queryParams)}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("BC Proxy returned {StatusCode}: {Error}", response.StatusCode, error);
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<ProductInfo>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting product from BC Proxy");
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Execute custom X++ code via BC Proxy
     /// </summary>
     public async Task<JsonElement> ExecuteXppAsync(string className, string methodName, object[]? parameters = null, string company = "GBL")

@@ -197,6 +197,38 @@ public class BCProxyTools
     }
 
     /// <summary>
+    /// Get product via BC Proxy
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_product_get")]
+    [Description("Get detailed product information from Dynamics AX 2012 via Business Connector Proxy. Includes multi-language support and custom Bras fields for dental instruments.")]
+    public async Task<string> GetProductAsync(
+        [Description("Product/Item ID (required)")] string itemId,
+        [Description("AX company code")] string company = "GBL",
+        [Description("Language code (de, en, fr, etc.) for product name and description")] string language = "de",
+        [Description("Include product categories from EcoResCategory")] bool includeCategories = false)
+    {
+        _logger.LogInformation("Getting product {ItemId} via BC Proxy, Company={Company}, Language={Language}", 
+            itemId, company, language);
+
+        try
+        {
+            var product = await _bcProxy.GetProductAsync(itemId, company, language, includeCategories);
+
+            if (product == null)
+            {
+                return JsonSerializer.Serialize(new { error = $"Product {itemId} not found in company {company}" });
+            }
+
+            return JsonSerializer.Serialize(product, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting product via BC Proxy");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Execute custom X++ code via BC Proxy
     /// </summary>
     [McpServerTool(Name = "ax_bc_execute")]
