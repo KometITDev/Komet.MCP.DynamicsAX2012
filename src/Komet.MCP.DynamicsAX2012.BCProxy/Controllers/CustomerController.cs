@@ -9,13 +9,13 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Controllers
     {
         [HttpGet]
         [Route("{accountNum}")]
-        public IHttpActionResult GetCustomer(string accountNum, string company = "GBL")
+        public IHttpActionResult GetCustomer(string accountNum, string company = "GBL", bool includeAddresses = false, bool includeContacts = false)
         {
             try
             {
                 using (var bcService = new BusinessConnectorService())
                 {
-                    var customer = bcService.GetCustomer(accountNum, company);
+                    var customer = bcService.GetCustomer(accountNum, company, includeAddresses, includeContacts);
                     return Ok(customer);
                 }
             }

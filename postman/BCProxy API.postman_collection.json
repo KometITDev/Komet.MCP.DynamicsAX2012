@@ -1,0 +1,515 @@
+{
+	"info": {
+		"name": "Dynamics AX 2012 - BCProxy API",
+		"description": "HTTP API für Dynamics AX 2012 Business Connector Proxy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5100",
+			"type": "string"
+		},
+		{
+			"key": "company",
+			"value": "GBL",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "health"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Get Customer by AccountNum (Basic)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/234760?company={{company}}&includeAddresses=false&includeContacts=false",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "234760"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeAddresses",
+									"value": "false",
+									"description": "Set to true to include addresses"
+								},
+								{
+									"key": "includeContacts",
+									"value": "false",
+									"description": "Set to true to include electronic addresses (phone, email)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer with Addresses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/234760?company={{company}}&includeAddresses=true&includeContacts=false",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "234760"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeAddresses",
+									"value": "true",
+									"description": "Include postal addresses"
+								},
+								{
+									"key": "includeContacts",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer with Contacts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/234760?company={{company}}&includeAddresses=false&includeContacts=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "234760"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeAddresses",
+									"value": "false"
+								},
+								{
+									"key": "includeContacts",
+									"value": "true",
+									"description": "Include electronic addresses (phone, email, fax, url)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer Full (Addresses + Contacts)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/234760?company={{company}}&includeAddresses=true&includeContacts=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "234760"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeAddresses",
+									"value": "true",
+									"description": "Include postal addresses"
+								},
+								{
+									"key": "includeContacts",
+									"value": "true",
+									"description": "Include electronic addresses (phone, email, fax, url)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by AccountNum (Wildcard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search?accountNum=234*&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search"],
+							"query": [
+								{
+									"key": "accountNum",
+									"value": "234*"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by CustomerGroup",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search?customerGroup=D-INL&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search"],
+							"query": [
+								{
+									"key": "customerGroup",
+									"value": "D-INL"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by ZipCode",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search/address?zipCode=32*&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search", "address"],
+							"query": [
+								{
+									"key": "zipCode",
+									"value": "32*"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by City",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search/address?city=Lemgo&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search", "address"],
+							"query": [
+								{
+									"key": "city",
+									"value": "Lemgo"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by ZipCode and City",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search/address?zipCode=32657&city=Lemgo&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search", "address"],
+							"query": [
+								{
+									"key": "zipCode",
+									"value": "32657"
+								},
+								{
+									"key": "city",
+									"value": "Lemgo"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customers by City (Wildcard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customer/search/address?city=Ber*&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customer", "search", "address"],
+							"query": [
+								{
+									"key": "city",
+									"value": "Ber*"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Get Product by ItemId (German)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/product/10001?company={{company}}&language=de",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "product", "10001"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "language",
+									"value": "de",
+									"description": "Language code (de, en, fr, etc.)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ItemId (English)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/product/10001?company={{company}}&language=en",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "product", "10001"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "language",
+									"value": "en",
+									"description": "Language code for product name"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product with Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/product/10001?company={{company}}&language=de&includeCategories=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "product", "10001"],
+							"query": [
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "language",
+									"value": "de"
+								},
+								{
+									"key": "includeCategories",
+									"value": "true",
+									"description": "Include product categories from EcoResCategory"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sales Order",
+			"item": [
+				{
+					"name": "Get Sales Order by SalesId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/salesorder?salesId=VKA/002326961&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "salesorder"],
+							"query": [
+								{
+									"key": "salesId",
+									"value": "VKA/002326961"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Sales Orders by CustomerAccount",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/salesorder/search?customerAccount=234760&company={{company}}&includeLines=false",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "salesorder", "search"],
+							"query": [
+								{
+									"key": "customerAccount",
+									"value": "234760"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeLines",
+									"value": "false",
+									"description": "Set to true to include order lines"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Sales Orders with Lines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/salesorder/search?customerAccount=234760&company={{company}}&includeLines=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "salesorder", "search"],
+							"query": [
+								{
+									"key": "customerAccount",
+									"value": "234760"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								},
+								{
+									"key": "includeLines",
+									"value": "true",
+									"description": "Include detailed order lines"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Sales Orders by SalesId (Wildcard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/salesorder/search?salesId=VKA*&company={{company}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "salesorder", "search"],
+							"query": [
+								{
+									"key": "salesId",
+									"value": "VKA*"
+								},
+								{
+									"key": "company",
+									"value": "{{company}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AX Execute",
+			"item": [
+				{
+					"name": "Execute X++ Static Method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"className\": \"Global\",\n  \"methodName\": \"info\",\n  \"parameters\": [\"Test message from Postman\"],\n  \"company\": \"GBL\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ax/execute",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ax", "execute"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

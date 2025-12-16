@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Microsoft.Owin.Hosting;
 
 namespace Komet.MCP.DynamicsAX2012.BCProxy
@@ -15,8 +16,13 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy
                 baseAddress = $"http://localhost:{port}/";
             }
 
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+            var fileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+
             Console.WriteLine("===========================================");
             Console.WriteLine("  Dynamics AX 2012 Business Connector Proxy");
+            Console.WriteLine($"  Version {fileVersion ?? version.ToString()}");
             Console.WriteLine("===========================================");
             Console.WriteLine();
 
@@ -30,7 +36,8 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy
                     Console.WriteLine("  GET  /api/health");
                     Console.WriteLine("  GET  /api/customer/{accountNum}?company=GBL");
                     Console.WriteLine("  GET  /api/customer/search?accountNum=...&company=GBL");
-                    Console.WriteLine("  GET  /api/salesorder/{salesId}?company=GBL");
+                    Console.WriteLine("  GET  /api/product/{itemId}?company=GBL");
+                    Console.WriteLine("  GET  /api/salesorder?salesId=...&company=GBL");
                     Console.WriteLine("  GET  /api/salesorder/search?customerAccount=...&company=GBL");
                     Console.WriteLine("  POST /api/ax/execute (for custom X++ calls)");
                     Console.WriteLine();

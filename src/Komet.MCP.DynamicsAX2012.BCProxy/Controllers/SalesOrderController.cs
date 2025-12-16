@@ -8,9 +8,14 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Controllers
     public class SalesOrderController : ApiController
     {
         [HttpGet]
-        [Route("{salesId}")]
+        [Route("")]
         public IHttpActionResult GetSalesOrder(string salesId, string company = "GBL")
         {
+            if (string.IsNullOrEmpty(salesId))
+            {
+                return BadRequest("salesId parameter is required");
+            }
+
             try
             {
                 using (var bcService = new BusinessConnectorService())
@@ -27,13 +32,13 @@ namespace Komet.MCP.DynamicsAX2012.BCProxy.Controllers
 
         [HttpGet]
         [Route("search")]
-        public IHttpActionResult SearchSalesOrders(string salesId = null, string customerAccount = null, string company = "GBL")
+        public IHttpActionResult SearchSalesOrders(string salesId = null, string customerAccount = null, string company = "GBL", bool includeLines = false)
         {
             try
             {
                 using (var bcService = new BusinessConnectorService())
                 {
-                    var orders = bcService.SearchSalesOrders(salesId, customerAccount, company);
+                    var orders = bcService.SearchSalesOrders(salesId, customerAccount, company, includeLines);
                     return Ok(orders);
                 }
             }

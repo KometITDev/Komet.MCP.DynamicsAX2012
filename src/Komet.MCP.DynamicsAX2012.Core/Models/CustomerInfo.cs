@@ -62,6 +62,7 @@ public class CustomerAddress
     public string CountryRegionId { get; set; } = string.Empty;
     public string FullAddress { get; set; } = string.Empty;
     public bool IsPrimary { get; set; }
+    public bool IsPrivate { get; set; }
     public string AddressType { get; set; } = string.Empty;
 }
 
