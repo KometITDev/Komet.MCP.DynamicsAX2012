@@ -110,7 +110,7 @@ if (-not (Test-Path $PhysicalPath)) {
     Write-Success "Verzeichnis erstellt"
 }
 
-# 4. Dateien kopieren
+# 4. Dateien kopieren mit korrekter Ordnerstruktur
 Write-Info "Kopiere Dateien nach $PhysicalPath..."
 try {
     # Alte Dateien löschen (außer web.config falls vorhanden)
@@ -131,9 +131,20 @@ try {
         }
     }
     
-    # Neue Dateien kopieren
-    Copy-Item -Path "$publishPath\*" -Destination $PhysicalPath -Recurse -Force
-    Write-Success "Dateien kopiert"
+    # bin-Ordner erstellen
+    $binPath = Join-Path $PhysicalPath "bin"
+    if (-not (Test-Path $binPath)) {
+        New-Item -Path $binPath -ItemType Directory -Force | Out-Null
+    }
+    
+    # DLLs und PDBs in bin-Ordner kopieren
+    Get-ChildItem -Path $publishPath -Filter "*.dll" | Copy-Item -Destination $binPath -Force
+    Get-ChildItem -Path $publishPath -Filter "*.pdb" | Copy-Item -Destination $binPath -Force
+    
+    # Config-Dateien ins Root kopieren (falls vorhanden)
+    Get-ChildItem -Path $publishPath -Filter "*.config" | Copy-Item -Destination $PhysicalPath -Force
+    
+    Write-Success "Dateien kopiert (DLLs in bin-Ordner)"
 }
 catch {
     Write-ErrorMsg "Fehler beim Kopieren: $_"
@@ -169,6 +180,22 @@ $webConfigContent = @"
       <dependentAssembly>
         <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
         <bindingRedirect oldVersion="0.0.0.0-13.0.0.0" newVersion="13.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.2.2.0" newVersion="4.2.2.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Host.SystemWeb" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.2.2.0" newVersion="4.2.2.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Http" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.3.0.0" newVersion="5.3.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.3.0.0" newVersion="5.3.0.0" />
       </dependentAssembly>
     </assemblyBinding>
   </runtime>

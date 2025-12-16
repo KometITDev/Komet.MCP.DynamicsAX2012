@@ -1,7 +1,10 @@
 using System.Web.Http;
+using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
+
+[assembly: OwinStartup(typeof(Komet.MCP.DynamicsAX2012.BCProxy.Startup))]
 
 namespace Komet.MCP.DynamicsAX2012.BCProxy
 {
