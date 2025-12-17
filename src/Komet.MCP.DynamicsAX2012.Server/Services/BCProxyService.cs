@@ -285,4 +285,105 @@ public class BCProxyService
             throw;
         }
     }
+
+    /// <summary>
+    /// Get top customers by sales amount (Analytics)
+    /// </summary>
+    public async Task<JsonElement> GetTopCustomersAsync(string company, int year, int top, string? city = null)
+    {
+        _logger.LogInformation("Getting top customers: Company={Company}, Year={Year}, Top={Top}, City={City}",
+            company, year, top, city);
+
+        try
+        {
+            var url = $"/api/analytics/top-customers?company={company}&year={year}&top={top}";
+            if (!string.IsNullOrEmpty(city))
+            {
+                url += $"&city={Uri.EscapeDataString(city)}";
+            }
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<JsonElement>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top customers via Analytics");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Get customer count grouped by city (Analytics)
+    /// </summary>
+    public async Task<JsonElement> GetCustomersByCityAsync(string company)
+    {
+        _logger.LogInformation("Getting customers by city: Company={Company}", company);
+
+        try
+        {
+            var url = $"/api/analytics/customers-by-city?company={company}";
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<JsonElement>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting customers by city");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Get sales statistics for a time period (Analytics)
+    /// </summary>
+    public async Task<JsonElement> GetSalesStatsAsync(string company, string? fromDate = null, string? toDate = null)
+    {
+        _logger.LogInformation("Getting sales stats: Company={Company}, From={From}, To={To}",
+            company, fromDate, toDate);
+
+        try
+        {
+            var url = $"/api/analytics/sales-stats?company={company}";
+            if (!string.IsNullOrEmpty(fromDate))
+            {
+                url += $"&fromDate={Uri.EscapeDataString(fromDate)}";
+            }
+            if (!string.IsNullOrEmpty(toDate))
+            {
+                url += $"&toDate={Uri.EscapeDataString(toDate)}";
+            }
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<JsonElement>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting sales stats");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Get top products by sales (Analytics)
+    /// </summary>
+    public async Task<JsonElement> GetTopProductsAsync(string company, int year, int top)
+    {
+        _logger.LogInformation("Getting top products: Company={Company}, Year={Year}, Top={Top}",
+            company, year, top);
+
+        try
+        {
+            var url = $"/api/analytics/top-products?company={company}&year={year}&top={top}";
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<JsonElement>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top products via Analytics");
+            throw;
+        }
+    }
 }

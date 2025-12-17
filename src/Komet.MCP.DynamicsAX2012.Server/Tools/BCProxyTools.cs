@@ -259,4 +259,91 @@ public class BCProxyTools
             return JsonSerializer.Serialize(new { error = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Get top customers by sales amount via BC Proxy Analytics (SQL-based)
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_analytics_top_customers")]
+    [Description("Get top customers by sales amount for a given year. Uses direct SQL query on AX database.")]
+    public async Task<string> GetTopCustomersAsync(
+        [Description("AX company code")] string company = "GBL",
+        [Description("Year to analyze")] int year = 2024,
+        [Description("Number of top customers to return")] int top = 10,
+        [Description("Optional: Filter by city")] string? city = null)
+    {
+        try
+        {
+            var result = await _bcProxy.GetTopCustomersAsync(company, year, top, city);
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top customers via Analytics");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get customer count grouped by city via BC Proxy Analytics
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_analytics_customers_by_city")]
+    [Description("Get customer count grouped by city. Uses direct SQL query on AX database.")]
+    public async Task<string> GetCustomersByCityAsync(
+        [Description("AX company code")] string company = "GBL")
+    {
+        try
+        {
+            var result = await _bcProxy.GetCustomersByCityAsync(company);
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting customers by city");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get sales statistics for a time period via BC Proxy Analytics
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_analytics_sales_stats")]
+    [Description("Get sales statistics (revenue, order count, averages) for a time period. Uses direct SQL query on AX database.")]
+    public async Task<string> GetSalesStatsAsync(
+        [Description("AX company code")] string company = "GBL",
+        [Description("Start date (YYYY-MM-DD)")] string? fromDate = null,
+        [Description("End date (YYYY-MM-DD)")] string? toDate = null)
+    {
+        try
+        {
+            var result = await _bcProxy.GetSalesStatsAsync(company, fromDate, toDate);
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting sales stats");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get top products by sales via BC Proxy Analytics
+    /// </summary>
+    [McpServerTool(Name = "ax_bc_analytics_top_products")]
+    [Description("Get top products by sales amount for a given year. Uses direct SQL query on AX database.")]
+    public async Task<string> GetTopProductsAsync(
+        [Description("AX company code")] string company = "GBL",
+        [Description("Year to analyze")] int year = 2024,
+        [Description("Number of top products to return")] int top = 10)
+    {
+        try
+        {
+            var result = await _bcProxy.GetTopProductsAsync(company, year, top);
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top products via Analytics");
+            return JsonSerializer.Serialize(new { error = ex.Message });
+        }
+    }
 }
